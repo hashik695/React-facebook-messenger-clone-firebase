@@ -12,10 +12,10 @@ import { IconButton } from '@material-ui/core';
 function App() {
   const [input,setInput] =useState('')
   const [messages,setMessage]=useState([])
-  const [username,setUsername]=useState()
+  const [username,setUsername]=useState('')
 
   useEffect(() => {
-    db.collection('message_clone').orderBy('timestamp','desc')
+    db.collection('messages').orderBy('timestamp','desc')
     .onSnapshot(snapshot=>{
       setMessage(snapshot.docs.map(doc=>({id:doc.id,message:doc.data()})))
     })
@@ -28,12 +28,11 @@ function App() {
 
   const sendMessage=(e)=>{
     e.preventDefault()
-    db.collection("message_clone").add({
+    db.collection("messages").add({
       message:input,
       username:username,
       timestamp:firebase.firestore.FieldValue.serverTimestamp()
     })
-    setMessage([...messages,{username:username,text:input}])
     setInput('')
   }
 
@@ -51,8 +50,7 @@ function App() {
           <IconButton className="app__iconbutton" disabled={!input} variant="contained" color="secondary" type="submit" onClick={sendMessage}>
             <SendIcon/>
           </IconButton>
-        
-     </FormControl>
+      </FormControl>
      </form>
      <FlipMove>
         {messages.map(({id,message})=>(
